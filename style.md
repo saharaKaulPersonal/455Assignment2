@@ -1,81 +1,13 @@
-# Discuss similarities and differences in coding style
+# README 
 
-----
+### Correctness: do LLMs write code with fewer errors than you? Why or why not?
+LLMs do not write fewer errors than us. I believe that LLMs oversimplified the assignment/tasks in this particular assignment. This oversimplification can be seen through Claude's adding_boundary_markers function, and it's lack of OOV handling. As I said in training.md Claude's adding_boundary_markers function added one start and end token to each line before passing it into the model, not accounting for the fact that n-grams are supposed to have (n-1) start and end tokens. This means that each model should have had a different number of start and end tokens, (unigram: 0, bigram: 1, trigram:2), which Claude did not account for.  Another example of the oversimplification was the fact that instead of handling OOVs properly by using <UNK> tags, Claude just returned a small probability if a token was OOV. Claude was also incorrect when calculating perplexity. As stated in evaluation.md, Claude returned a small probability (1E-10) when there was a zero count for the bigram or trigram rather than returning infinity for unsmoothed bigrams/trigrams. This resulted in Claude's perplexity calculations on dev.txt being surprisingly low for unsmoothed bigrams and trigrams (e.g/15.62 perplexity for unsmoothed bigram and 7.96 for unsmoothed trigram), while they should really have been infinity (which our perplexity results were for the unsmoothed bigram/trigram), or at the very least, significantly higher. This is not to say our code was not without errors. We made mistakes by adding start and end symbols to the unigram, and we should have adjusted the OOV cutoff based on the lowest counts in the unigram model rather than hardcoding it at 26 (which resulted in our model based tiny_training.txt being empty which is a pretty big error), but these mistakes were not due to oversimplification, and ultimately, I believe our code had fewer errors than LLM's. In conclusion, my group, as a team, paid more attention to how things worked and I think as a result wrote more correct code since it was rooted in understanding of the concepts.
 
-### Comments
+### Style: is the style of LLM coding better than yours? Why or why not?
+I think the LLM code style and our code style are extremely similar. We both have similar commenting methods, as discussed in style.md, follow similar variable naming conventions, and have the same types of function declarations. The LLM coding style may be slightly better, as Claude's code has a few more comments, and more descriptive print statements.
 
-**Example:**
+### Similarity: if a random person looks at your code, would they be able to tell it was not written by an LLM?
+I don't think so. A large chunk of our code is very similar to the LLM code. For the most part, the code follows the same logic, like how n-grams are counted. The architecture for both code bases is quite similar, as noted in architecture.md. There is no signficant difference between the comments in the LLM code and our code, nor the overall style (as noted in style.md). most_similar.md points out that the unigram training functions follow a similar order of steps, and this holds for the majority of functions. One thing that may tip someone off that our code is not LLM is the fact that we use very few print statements. As noted in the most_disimilar.md, there are a few logic differences, but I am unsure if a random person could discern the difference between the logic of LLM code and the logic of our code.  
 
-|yours|LLM|
-|---|---|
-|![MyComments](images/comments.png)|![LLM comments](images/llmcomments.png)|
-
-**Discussion:**
-
-```
-The style of the comments are similar between Claude's code and our code. Each function begins with a multiline comment describing what the function does. And then there are one line comments next to/above lines of code explaining what is going on specifically in that line/the next few lines. This commenting practice is extremely common, which is why it makes sense that Claude comments this way. The majority of it's training data probably follows a similar commenting style to ours, and that is why Claude comments this way.
-```
-
-----
-
-### Function declarations
-
-**Example:**
-
-|yours|LLM|
-|---|---|
-|![My function declaration](images/functiondeclaration.png)|![LLM function decleration](images/llmfunctiondeclarations.png)|
-
-**Discussion:**
-
-```
-The function declarations are similar between Claude's code and our code. Both our codes do not use type-annotations in our function declarations (meaning we do not define the type of the parameters we are passing in the function declaration nor do we define the return type in the function declaration). It is a little surprising that Claude doesn't use type-annotations, as ChatGPT does, but it suggests the majority of the training data Claude uses does not have type-annotations in function declarations.
-```
-
-----
-
-### Organization of the JSON file
-
-**Example:**
-
-|yours|LLM|
-|---|---|
-|![My JSON organization](images/json.png)|![LLM JSON organization](images/llmjson.png)|
-
-**Discussion:**
-
-```
-Our JSON files are structured a little differently. Claude's json is more complex, as it uses a nested dictionary, while ours is more simple because it uses a regular dictionary. 
-```
-
-----
-
-### Print statements
-
-**Example:**
-
-|yours|LLM|
-|---|---|
-|![My print](images/printscreenshot.png)|![LLM Print](images/llmprintscreenshot.png)|
-
-**Discussion:**
-
-```
-Print statements follow the same style in both our code and Claude's code. They both use f-string formatting, which is probably the most standard type of print statement, which is why it makes sense that Claude's print statement follow that format, as the majority of it's training data probably follows that. 
-```
-
-----
-
-### Presenting the perplexity results
-
-**Example:**
-
-|yours|LLM|
-|---|---|
-|![My perplexity](images/printscreenshot.png)|![LLM Perplexitt](images/llmprintscreenshot.png)|
-
-**Discussion:**
-
-```
-Both Claude's code and our code present the perpelexity results the a simple print statement. The only difference is Claude's code limits the perplexity number to two decimal places when printing (by using .2f). This is probably the format the majority of the training data followed. 
-```
+### Should computing assignments like assignment 3 be given for marks? Base your answer on how easy it is to obtain answers from an LLM and assume that students will use LLMs to help them code in the future.
+I think that computing assignments like assignment 3 should still be given out for marks. Claude's code clearly missed key details, such as OOV handling, how to compute perplexity and how many start and end tokens should be added. These details were taught to us in depth in class and through textbooks, and had students been paying attention, or been using these assignments as a method to learn, they would have noticed those details, and handled things such as OOV tokens and calculating perplexity. It is true that our perplexity values were quite close with Claude's for the majority of values (for smoothed bigram they match up exactly: with 15.54 for the training.txt and 15.60 for the dev.txt), but the perplexity difference in unsmoothed bigrams and trigrams on the dev set (where our perplexity values were infinity but Claude's were 5.62 perplexity for unsmoothed bigram and 7.96 for unsmoothed trigram) reflects the fact that Claude's code missed key concepts. Although it does occasionally happen that a student who used LLM scores better than a student who didn't, a student who did not use LLM would have a better understanding of the concepts the assignment was trying to teach. Even if a student did use LLM to code, if they understood the important concepts taught in class, they would be able to find LLMs mistakes. This understanding would also be reflected in the report that is also a part of the assignment. These assignments, in general, will reflect the understanding of the student, so there is no reason they should not be for marks.
